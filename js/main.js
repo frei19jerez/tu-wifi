@@ -20,12 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const menu = document.getElementById("menu");
 
   if (menuToggle && menu) {
+    menuToggle.setAttribute("aria-label", "Abrir menú");
+    menuToggle.setAttribute("aria-expanded", "false");
+
     menuToggle.addEventListener("click", () => {
       const isOpen = menu.classList.toggle("open");
       menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
     });
 
-    // Cerrar menú al hacer clic en cualquier enlace
     menu.querySelectorAll("a").forEach((link) => {
       link.addEventListener("click", () => {
         menu.classList.remove("open");
@@ -38,8 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // WhatsApp rápido
   // =======================
   const defaultMessage = `Hola ${COMPANY}, quiero información sobre sus planes de internet.`;
-  const encodedMessage = encodeURIComponent(defaultMessage);
-  const whatsappUrl = `https://wa.me/${WAPP_FIXED}?text=${encodedMessage}`;
+  const whatsappUrl = crearUrlWhatsApp(defaultMessage);
 
   const linkWapp = document.getElementById("linkWapp");
   const wappFloat = document.getElementById("wappFloat");
@@ -51,6 +52,21 @@ document.addEventListener("DOMContentLoaded", () => {
   if (wappFloat) {
     wappFloat.href = whatsappUrl;
   }
+
+  // =======================
+  // Botones de planes
+  // =======================
+  document.querySelectorAll("[data-plan]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const plan = btn.dataset.plan || "un plan de internet";
+      const megas = btn.dataset.megas || "";
+      const precio = btn.dataset.precio || "";
+
+      const mensaje = `Hola ${COMPANY}, quiero solicitar información sobre el ${plan}${megas ? " de " + megas + " Megas" : ""}${precio ? " por " + precio : ""}.`;
+
+      btn.href = crearUrlWhatsApp(mensaje);
+    });
+  });
 
   // =======================
   // Formulario hacia WhatsApp
@@ -66,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const tel = (document.getElementById("telefono")?.value || "").trim();
       const msg = (document.getElementById("mensaje")?.value || "").trim();
 
-      // Validaciones
       if (!nombre || !email || !tel || !msg) {
         alert("Por favor completa todos los campos.");
         return;
@@ -77,15 +92,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const texto = encodeURIComponent(
-        `Hola ${COMPANY}, soy ${nombre}.
+      const texto = `Hola ${COMPANY}, soy ${nombre}.
 Email: ${email}
 Teléfono: ${tel}
-Mensaje: ${msg}`
-      );
+Mensaje: ${msg}`;
 
-      const url = `https://wa.me/${WAPP_FIXED}?text=${texto}`;
-      window.open(url, "_blank");
+      window.open(crearUrlWhatsApp(texto), "_blank");
     });
   }
 });
+
+// =======================
+// Función WhatsApp
+// =======================
+function crearUrlWhatsApp(mensaje) {
+  return `https://wa.me/${WAPP_FIXED}?text=${encodeURIComponent(mensaje)}`;
+}
