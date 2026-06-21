@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Año dinámico
   // =======================
   const yearEl = document.getElementById("year");
+
   if (yearEl) {
     yearEl.textContent = new Date().getFullYear();
   }
@@ -53,19 +54,49 @@ document.addEventListener("DOMContentLoaded", () => {
     wappFloat.href = whatsappUrl;
   }
 
+  // También actualiza todos los botones flotantes por clase
+  document.querySelectorAll(".wapp-float").forEach((link) => {
+    link.href = whatsappUrl;
+  });
+
+  // También actualiza cualquier enlace que apunte a WhatsApp
+  document.querySelectorAll('a[href*="wa.me"]').forEach((link) => {
+    if (!link.hasAttribute("data-plan")) {
+      link.href = whatsappUrl;
+    }
+  });
+
   // =======================
   // Botones de planes
   // =======================
   document.querySelectorAll("[data-plan]").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const plan = btn.dataset.plan || "un plan de internet";
-      const megas = btn.dataset.megas || "";
-      const precio = btn.dataset.precio || "";
+    const plan = btn.dataset.plan || "un plan de internet";
+    const megas = btn.dataset.megas || "";
+    const precio = btn.dataset.precio || "";
 
-      const mensaje = `Hola ${COMPANY}, quiero solicitar información sobre el ${plan}${megas ? " de " + megas + " Megas" : ""}${precio ? " por " + precio : ""}.`;
+    const mensaje = `Hola ${COMPANY}, quiero solicitar información sobre el ${plan}${megas ? " de " + megas + " Megas" : ""}${precio ? " por " + precio : ""}.`;
 
+    btn.href = crearUrlWhatsApp(mensaje);
+
+    btn.addEventListener("click", () => {
       btn.href = crearUrlWhatsApp(mensaje);
     });
+  });
+
+  // =======================
+  // Botón verificar cobertura
+  // =======================
+  document.querySelectorAll("[data-cobertura]").forEach((btn) => {
+    const mensaje = `Hola ${COMPANY}, quiero verificar si tienen cobertura en mi zona.`;
+    btn.href = crearUrlWhatsApp(mensaje);
+  });
+
+  // =======================
+  // Botón soporte técnico
+  // =======================
+  document.querySelectorAll("[data-soporte]").forEach((btn) => {
+    const mensaje = `Hola ${COMPANY}, necesito soporte técnico con mi servicio de internet.`;
+    btn.href = crearUrlWhatsApp(mensaje);
   });
 
   // =======================
